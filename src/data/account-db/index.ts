@@ -1,4 +1,4 @@
-import { Mongo } from '@mezorn-com/mzrn-mongodb'
+import { Mongo } from "@/data"
 
 const { MONGO_URL = '', ACCOUNT_DB = '' } = process.env
 

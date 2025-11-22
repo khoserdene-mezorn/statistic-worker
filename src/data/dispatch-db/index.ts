@@ -1,4 +1,4 @@
-import { Mongo } from '@mezorn-com/mzrn-mongodb'
+import { Mongo } from "@/data"
 
 const { MONGO_URL = '', DISPATCH_DB = '' } = process.env
 

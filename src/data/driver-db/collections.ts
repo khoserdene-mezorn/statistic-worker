@@ -1,4 +1,4 @@
-import { MongoCollection } from '@mezorn-com/mzrn-mongodb'
+import { MongoCollection } from '@/data/mongo'
 
 import { DbDriver } from './types'
 
