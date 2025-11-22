@@ -12,10 +12,10 @@ export const listenToRequestChanges = async (io: any) => {
   })
 
   requestChangeStream.on('change', async () => {
-    console.log('request added')
-    const { count } = await getRequestCount()
+    const { count, acceptCount } = await getRequestCount()
     io.emit("request-count", {
-      count
+      count,
+      acceptCount
     })
   })
 }
@@ -23,7 +23,10 @@ export const listenToRequestChanges = async (io: any) => {
 export const getRequestCount = async () => {
   const db = await getDispatchDbConnection()
   const count = await requestCollection(db).countDocuments({})
+  const acceptCount = await requestCollection(db).countDocuments({ status: 'accepted' })
+
   return {
-    count
-  }  
+    count,
+    acceptCount
+  }
 }
