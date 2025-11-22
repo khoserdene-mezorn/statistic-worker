@@ -5,6 +5,8 @@ import { getDriverCount, listenToDriverChanges } from "@/driver-listener"
 import { getRiderCount, listenToRiderChanges } from "@/rider-listener"
 import { getRequestCount, listenToRequestChanges } from "@/request-listener"
 
+const listener = false
+
 const httpServer = createServer(async (req, res) => {
   // CORS headers нэмэх
   res.setHeader("Access-Control-Allow-Origin", "*")
@@ -24,6 +26,11 @@ const httpServer = createServer(async (req, res) => {
     return
   }
   switch (req.url) {
+    case "/api/init": {
+      res.writeHead(200, { "Content-Type": "application/json" })
+      res.end(JSON.stringify({ listener }))
+      break
+    }
     case "/api/driver": {
       res.writeHead(200, { "Content-Type": "application/json" })
       const response = await getDriverCount()
@@ -56,9 +63,11 @@ const io = new Server(httpServer, {
 })
 
 const run = async () => {
-  await listenToDriverChanges(io)
-  await listenToRiderChanges(io)
-  await listenToRequestChanges(io)
+  if (listener) {
+    await listenToDriverChanges(io)
+    await listenToRiderChanges(io)
+    await listenToRequestChanges(io)
+  }
 
   httpServer.listen(3001, "0.0.0.0", () => {
     console.log("Socket.IO server running on port 3001")

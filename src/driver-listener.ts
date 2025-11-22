@@ -14,36 +14,16 @@ export const listenToDriverChanges = async (io: any) => {
   })
 
   driverChangeStream.on('change', async (change: ChangeStreamUpdateDocument<DbDriver>) => {
-    const {updateDescription = {}, fullDocument = {} } = change
+    const {updateDescription = {} } = change
 
     const updatedFields = Object.keys(updateDescription.updatedFields || {})
     if (updatedFields.includes('serviceStatus')) {
-      const { serviceStatus } = fullDocument as any
-      console.log({
-        serviceStatus,
+      const {offlineCount, busyCount, onlineCount} = await getDriverCount()
+      io.emit("driver-updated", {
+        offlineCount,
+        busyCount,
+        onlineCount
       })
-      if (serviceStatus === 0) {
-        console.log('driver is offline')
-        const count = await driverCollection(db).countDocuments({ serviceStatus: 0 })
-        console.log(count)
-        io.emit("driver-offline", {
-          count
-        })
-      } else if (serviceStatus === 200) {
-        console.log('driver is online')
-        const count = await driverCollection(db).countDocuments({ serviceStatus: 200 })
-        console.log(count)
-        io.emit("driver-online", {
-          count
-        })
-      } else if (serviceStatus === 201) {
-        console.log('driver is busy')
-        const count = await driverCollection(db).countDocuments({ serviceStatus: 201 })
-        console.log(count)
-        io.emit("driver-busy", {
-          count
-        })
-      }
     }
   })
 }
