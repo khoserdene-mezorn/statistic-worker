@@ -18,9 +18,8 @@ export const listenToDriverChanges = async (io: any) => {
 
     const updatedFields = Object.keys(updateDescription.updatedFields || {})
     if (updatedFields.includes('serviceStatus')) {
-      const {offlineCount, busyCount, onlineCount} = await getDriverCount()
+      const {busyCount, onlineCount} = await getDriverCount()
       io.emit("driver-updated", {
-        offlineCount,
         busyCount,
         onlineCount
       })
@@ -30,11 +29,10 @@ export const listenToDriverChanges = async (io: any) => {
 
 export const getDriverCount = async () => {
   const db = await getDriverDbConnection()
-  const offlineCount = await driverCollection(db).countDocuments({ serviceStatus: 0 })
   const onlineCount = await driverCollection(db).countDocuments({ serviceStatus: 200 })
   const busyCount = await driverCollection(db).countDocuments({ serviceStatus: 201 })
+
   return {
-    offlineCount,
     onlineCount,
     busyCount
   }
